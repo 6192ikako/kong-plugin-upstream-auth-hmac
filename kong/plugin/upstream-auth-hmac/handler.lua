@@ -1,3 +1,4 @@
+
 local BasePlugin = require "kong.plugins.base_plugin"
 local openssl_hmac = require "openssl.hmac"
 
@@ -12,12 +13,22 @@ end
 function PluginHandler:access(conf)
     PluginHandler.super.access(self)
 
-    local username = conf.username
-    local secret = conf.secret
+	local ok, err = buffer.init({
+	    local username = conf.username
+	    local secret = conf.secret
+	    debug(secret);
 
-    local date = ngx.http_time(ngx.now())
-    local algorithm = "hmac-sha256"
-    local hmac_headers = "date request-line"
+	    local date = ngx.http_time(ngx.now())
+	    local algorithm = "hmac-sha256"
+	    local hmac_headers = "date request-line"
+
+	 })
+
+	if (not ok) then
+	    ngx.log(ngx.ERR, err)
+	    return false
+	end
+	
     local method = ngx.req.get_method()
     local path_with_query = kong.request.get_path_with_query()
     -- local path_with_query = ngx.var.request_uri
